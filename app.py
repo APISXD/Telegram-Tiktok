@@ -67,17 +67,25 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             new_text: str = text.replace(BOT_USERNAME, '').strip()
         else:
             return
-    elif message_type == 'private':
+    elif message_type == 'private':  # Corrected indentation
         if "tiktok.com" in text:
+            print("TikTok URL detected")  # Debug print to verify TikTok URL detection
 
             result = await hybrid_parsing(text)
 
             if result:
+                print("Parsing successful")  # Debug print to confirm successful parsing
+
                 video = result[0]
                 video_hq = result[1]
                 music = result[2]
                 caption = result[3]
                 link =  result[4]
+
+                print("Video URL:", video)  # Debug print to check video URL
+                print("Music URL:", music)  # Debug print to check music URL
+                print("Caption:", caption)  # Debug print to check caption
+
                 text = "Link:\n" + link + "\n\n" + "Sound:\n" + music + "\n\n" + "Caption:\n" + caption
                 text_link = "Video is too large, sending link instead" + "\n\n" + "Link:\n" + link + "\n\n" + "Sound:\n" + music + "\n\n" + "Caption:\n" + caption
 
@@ -85,14 +93,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     await update.message.reply_video(video=InputFile(video_hq), caption=text)
                 except Exception as e:
                     if "Request Entity Too Large (413)" in str(e):
-                        print("Video is too large, sending link instead")
+                        print("Video is too large, sending link instead")  # Debug print to indicate video size issue
                         await update.message.reply_text(text_link)
 
             else:
                 await update.message.reply_text("Please send only TikTok URL")
         else:
             await update.message.reply_text("Please send a TikTok URL")
-            return
 
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Update {update} caused error {context.error}')
@@ -116,5 +123,3 @@ if __name__ == '__main__':
     # Polls the bot
     print('Polling...')
     app.run_polling(poll_interval=3)
-
-
